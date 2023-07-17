@@ -152,6 +152,30 @@ dmypy.json
 # Cython debug symbols
 cython_debug/
 
+
+# Django project
+*.log
+*.pot
+*.pyc
+__pycache__/
+local_settings.py
+db.sqlite3
+
+# Static files
+/staticfiles/
+*.pyc
+*.pyo
+*.pyd
+
+# Media files
+/media/
+
+# Environment variables
+.env
+
+# Virtual environment
+venv/
+
 # PyCharm
 #  JetBrains specific template is maintained in a separate JetBrains.gitignore that can
 #  be found at https://github.com/github/gitignore/blob/main/Global/JetBrains.gitignore
