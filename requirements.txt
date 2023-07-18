@@ -1,0 +1,4 @@
+python-decouple
+mysqlclient
+django
+django-restframework
