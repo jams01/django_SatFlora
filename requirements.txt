@@ -3,3 +3,4 @@ mysqlclient
 django
 djangorestframework
 firebase-admin
+sphinx

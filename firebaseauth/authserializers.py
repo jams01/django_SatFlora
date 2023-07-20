@@ -8,6 +8,14 @@ class ProfileSerializer(serializers.ModelSerializer):
         fields = ("telefono", "direccion", "foto", "nacimiento","sexo")
 
 class CurrentUserSerializer(serializers.ModelSerializer):
+    """
+        user serialize
+
+        This class takes an user Object and select the filed to be serialized before sending it to the front end.
+        
+        Attributes:
+            profile: an instance of the Profile serializer.
+    """
     profile = ProfileSerializer()
     class Meta:
         model = User
