@@ -14,8 +14,12 @@ from pathlib import Path
 from decouple import AutoConfig
 
 from pathlib import Path
+import os
 
 config = AutoConfig(search_path='./django_SatFlora/')
+
+import firebase_admin
+from firebase_admin import credentials
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -42,6 +46,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'corsheaders',
+    'firebaseauth.apps.FirebaseauthConfig'
 ]
 
 MIDDLEWARE = [
@@ -53,6 +60,12 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'firebaseauth.authentication.FirebaseAuthentication',
+    ]
+}
 
 ROOT_URLCONF = 'django_SatFlora.urls'
 
@@ -119,6 +132,15 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 
 USE_TZ = True
+
+# Path to the service account credentials JSON file
+#FIREBASE_CREDENTIALS_PATH = './firebase_credentials.json'
+
+# Initialize Firebase Admin SDK
+#firebase_admin.initialize_app(credentials.Certificate(FIREBASE_CREDENTIALS_PATH))
+
+cred = credentials.Certificate(os.path.join(BASE_DIR, "firebase_credentials.json"))
+firebase_admin.initialize_app(cred)
 
 
 # Static files (CSS, JavaScript, Images)

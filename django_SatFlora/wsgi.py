@@ -14,3 +14,8 @@ from django.core.wsgi import get_wsgi_application
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'django_SatFlora.settings')
 
 application = get_wsgi_application()
+
+#import firebase_admin
+#firebase_admin.initialize_app()
+
+
