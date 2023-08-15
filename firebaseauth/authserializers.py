@@ -5,7 +5,7 @@ from firebaseauth.models import Profile
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
-        fields = ("telefono", "direccion", "foto", "nacimiento","sexo")
+        fields = ("phone", "address", "picture", "birthdate","sex")
 
 class CurrentUserSerializer(serializers.ModelSerializer):
     """

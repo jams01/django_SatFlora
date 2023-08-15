@@ -16,7 +16,7 @@ from decouple import AutoConfig
 from pathlib import Path
 import os
 
-config = AutoConfig(search_path='../django_SatFlora/')
+config = AutoConfig(search_path='./django_SatFlora/')
 
 import firebase_admin
 from firebase_admin import credentials

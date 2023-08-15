@@ -14,19 +14,19 @@ SEXO_CHOICES = [
 # Create your models here.
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")
-    telefono = models.CharField(max_length=500, blank=False, null=False)
-    direccion = models.CharField(max_length=100, blank=False, null=False)
-    foto = models.ImageField(null=True, blank=True)
-    nacimiento = models.DateField(null=True, blank=True)
-    sexo = models.CharField(
+    phone = models.CharField(max_length=500, blank=False, null=False)
+    address = models.CharField(max_length=100, blank=False, null=False)
+    picture = models.ImageField(null=True, blank=True)
+    birthdate = models.DateField(null=True, blank=True)
+    sex = models.CharField(
         max_length=2,
         choices=SEXO_CHOICES,
         default=MASCULINO,
     )
-    fecha_ingreso = models.DateField(auto_now=True, null=False)
+    registerDate = models.DateField(auto_now=True, null=False)
     isactive = models.BooleanField(default=True)
     def __str__(self):
-        return self.user.first_name + " " +self.user.last_name + "C.C." + self.user.username 
+        return self.user.first_name + " " + self.user.last_name + "C.C." + self.user.username
 
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
@@ -36,3 +36,4 @@ def create_user_profile(sender, instance, created, **kwargs):
 @receiver(post_save, sender=User)
 def save_user_profile(sender, instance, **kwargs):
     instance.profile.save()
+
