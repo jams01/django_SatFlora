@@ -9,3 +9,4 @@ Make sure to read and understand the Following principles before starting the de
    api
    django
    viewset
+   datamodel
