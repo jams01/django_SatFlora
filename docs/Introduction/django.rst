@@ -93,3 +93,62 @@ In the main `urls.py` file of your project:
         path('admin/', admin.site.urls),
         path('myapp/', include('myapp.urls')),
     ]
+
+
+4. Enviromente Variables
+----------------------------------
+
+Create an .env file in the root of your project. There we will add our environment variables, remember to update the values with those of your project:
+
+    SECRET_KEY=django-insecure-^prw$_z^2)+x0omx@d%p-toes4-+z+_kl(=$duc@qgi3^@8s*v
+    DEBUG=True
+    DB_NAME=tiendaonline
+    DB_USER=postgres
+    DB_PASSWORD=post123
+    DB_HOST=localhost
+    ALLOWED_HOSTS=127.0.0.1, localhost
+
+In your .gitignore file add the following:
+
+    .env
+
+For our Django application to be able to read the values of the .env file we need the help of a library. At this case we'll use python decouple
+
+-First let's install the library:
+
+    pip install python-decouple
+
+In your settings.py you import the library:
+
+    from decouple import config
+
+And to access a value defined in the .env file we do the following:
+
+    SECRET_KEY = config("SECRET_KEY")
+
+By default decouple brings the values in string format, but a Django project needs several types of values such as the following:
+
+DEBUG expects a boolean value True or False.
+ALLOWED_HOSTS expects a list of hosts.
+EMAIL_PORT expects an integer.
+For this we have the cast argument:
+
+    # De string a booleano
+    DEBUG = config("DEBUG", cast=bool)
+    
+    # De string a entero
+    EMAIL_PORT = config('EMAIL_PORT', cast=int)
+    
+    # Forma 1: De string a lista
+    ALLOWED_HOSTS = config(
+        'ALLOWED_HOSTS', cast=lambda v: [s.strip() for s in v.split(',')]
+    )
+    
+    # Forma 2: De string a lista
+    from decouple import Csv
+    
+    ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=Csv())
+
+You can add default values to be used in case they do not exist in the .env file with the default argument:
+
+    DEBUG = config('DEBUG', default=True, cast=bool)
