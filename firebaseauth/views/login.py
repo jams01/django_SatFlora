@@ -6,8 +6,12 @@ from rest_framework import viewsets, status
 from firebaseauth.permissions import StaffPermission
 from firebaseauth.authserializers import CurrentUserSerializer
 
+import firebase_admin
+from firebase_admin import auth
+from django.contrib.auth.models import User
 
 class MyView(APIView):
+    
     """
     An ApiView for managing user instances.
 
@@ -17,8 +21,6 @@ class MyView(APIView):
         authentication_classes: This is the class used to perform the authetication
         permission_classes: This is the class for check if the user have the rights to use this view.
     """
-    authentication_classes = (FirebaseAuthentication, )
-    permission_classes = (IsAuthenticated,)
     def post(self, request):
         """
             This method is used when something is posted to this path
@@ -69,6 +71,7 @@ class ProtectedView(APIView):
         return Response(content)
 
 class MyViewSet(viewsets.ViewSet):
+    
     """
     An ViewSet for managing user instances.
 
@@ -110,7 +113,7 @@ class MyViewSet(viewsets.ViewSet):
         serializer = self.serializer_class(request.user)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    def create(self, request, id):
+    def create(self, request):
         """
         This method creates a new user and return the serialized object created, can only be accesed by staff
         
@@ -121,8 +124,30 @@ class MyViewSet(viewsets.ViewSet):
         Returns:
             A serialized user object
         """
-        serializer = self.serializer_class(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        print("Solicitud POST recibida")
+
+        try:
+            # Obtén los datos del usuario del cuerpo de la solicitud
+            datos_usuario = request.data
+
+            # Crea el usuario en Firebase Authentication
+            usuario_firebase = auth.create_user(
+                email=datos_usuario['email'],
+                password=datos_usuario['password']
+            )
+
+            respuesta = {
+                'mensaje': 'Usuario creado exitosamente',
+                'usuario_id': usuario_django.id
+            }
+
+            return Response(respuesta, status=status.HTTP_201_CREATED)
+
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        
+    def getTest(self, request):
+        print("Solicitud GET recibida")
+        return Response({'message': 'Esta es una vista de prueba.'})    
+
