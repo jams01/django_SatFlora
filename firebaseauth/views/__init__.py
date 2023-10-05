@@ -1,1 +1,1 @@
-from firebaseauth.views import login
+from firebaseauth.views import login, register

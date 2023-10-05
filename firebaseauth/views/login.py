@@ -4,11 +4,12 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import viewsets, status
 from firebaseauth.permissions import StaffPermission
-from firebaseauth.authserializers import CurrentUserSerializer
+from firebaseauth.authserializers import CurrentUserSerializer, ProfileSerializer
 
-import firebase_admin
-from firebase_admin import auth
-from django.contrib.auth.models import User
+from ..models import Profile, User
+
+import firebase_admin.auth as auth
+from django.db import transaction
 
 class MyView(APIView):
     
@@ -128,21 +129,51 @@ class MyViewSet(viewsets.ViewSet):
         print("Solicitud POST recibida")
 
         try:
-            # Obtén los datos del usuario del cuerpo de la solicitud
+            # Obtén los datos del usuario del cuerpo de la solicitud y el perfil de este
             datos_usuario = request.data
+            datos_profile = datos_usuario.pop('profile')
 
             # Crea el usuario en Firebase Authentication
-            usuario_firebase = auth.create_user(
+            user = auth.create_user(
                 email=datos_usuario['email'],
                 password=datos_usuario['password']
             )
+            datos_usuario["username"] = user.uid
+            
+            #Crea un Profile en django
+            print("PROFILE")
+            perfil = Profile.objects.create(datos_profile)
+            
+            print("USER")
+            #Crea un User en django
+            django_user = User.objects.create_user(
+                username=datos_usuario["username"],  # Usa el UID de Firebase como nombre de usuario
+                email=datos_usuario['email'],
+                password=datos_usuario['password']
+            )
+        
+            print("hola 3")
+            
+            print("hola 3")
+            
+            # Validación de datos con los serializadores
+            user_serializer = CurrentUserSerializer(django_user)
+            profile_serializer = ProfileSerializer(perfil)
+            
+            if user_serializer.is_valid() and profile_serializer.is_valid():
+            # Creación del usuario y el perfil dentro de una transacción
+                with transaction.atomic():
+                    
+                    #Asigna el perfil al usuario
+                    django_user.profile = perfil
+                    django_user.save()
+                    
+                    user_serializer = CurrentUserSerializer(django_user)
 
-            respuesta = {
-                'mensaje': 'Usuario creado exitosamente',
-                'usuario_id': usuario_django.id
-            }
-
-            return Response(respuesta, status=status.HTTP_201_CREATED)
+            # Devuelve una respuesta exitosa
+                return Response("User: "+user_serializer.data+"Profile: "+profile_serializer.data, status=status.HTTP_201_CREATED)
+            else:
+                return Response("User: "+user_serializer.errors+"Profile: "+profile_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
