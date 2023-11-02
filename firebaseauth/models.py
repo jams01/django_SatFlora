@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.conf import settings
+from django.contrib.auth.models import User
 
 MASCULINO = 'MA'
 FEMENINO = 'FE'
@@ -10,7 +11,7 @@ SEXO_CHOICES = [
     (MASCULINO, 'Masculino'),
     (FEMENINO, 'Femenino'),
 ]
-
+    
 # Create your models here.
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")
