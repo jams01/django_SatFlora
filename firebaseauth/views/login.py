@@ -4,7 +4,9 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import viewsets, status
 from firebaseauth.permissions import StaffPermission
-from firebaseauth.authserializers import CurrentUserSerializer, ProfileSerializer
+from django.contrib.auth import authenticate, login
+from django.http import JsonResponse
+from rest_framework import status
 
 from ..models import Profile, User
 
@@ -71,7 +73,7 @@ class ProtectedView(APIView):
         }
         return Response(content)
 
-class MyViewSet(viewsets.ViewSet):
+class Login(viewsets.ViewSet):
     
     """
     An ViewSet for managing user instances.
@@ -83,8 +85,22 @@ class MyViewSet(viewsets.ViewSet):
         serializer_class: This class takes and model object and convert it to a string type to be 
         sent to the front end.
     """
-    authentication_classes = (FirebaseAuthentication, )
-    serializer_class = CurrentUserSerializer
+    queryset = User.objects.all()
+    
+    def post(self, request):
+        try:
+            firebase_token = request.data.get("firebase_token")
+            
+            decoded_token = auth.verify_id_token(firebase_token)
+        
+            uid = decoded_token['uid']
+            username = decoded_token.get('email')
+            
+            return Response({'user_uid': uid,'username':username}, status=status.HTTP_200_OK)
+        except:
+            # Maneja el error de token de Firebase inválido
+            return Response({'message': 'Token de Firebase inválido'}, status=status.HTTP_401_UNAUTHORIZED)
+        
     def get_permissions(self):
         """
         This method set up the permission for each view, 
@@ -114,70 +130,7 @@ class MyViewSet(viewsets.ViewSet):
         serializer = self.serializer_class(request.user)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    def create(self, request):
-        """
-        This method creates a new user and return the serialized object created, can only be accesed by staff
-        
-        Args:
-            request: The request object
-            id: For know is not used
-
-        Returns:
-            A serialized user object
-        """
-
-        print("Solicitud POST recibida")
-
-        try:
-            # Obtén los datos del usuario del cuerpo de la solicitud y el perfil de este
-            datos_usuario = request.data
-            datos_profile = datos_usuario.pop('profile')
-
-            # Crea el usuario en Firebase Authentication
-            user = auth.create_user(
-                email=datos_usuario['email'],
-                password=datos_usuario['password']
-            )
-            datos_usuario["username"] = user.uid
-            
-            #Crea un Profile en django
-            print("PROFILE")
-            perfil = Profile.objects.create(datos_profile)
-            
-            print("USER")
-            #Crea un User en django
-            django_user = User.objects.create_user(
-                username=datos_usuario["username"],  # Usa el UID de Firebase como nombre de usuario
-                email=datos_usuario['email'],
-                password=datos_usuario['password']
-            )
-        
-            print("hola 3")
-            
-            print("hola 3")
-            
-            # Validación de datos con los serializadores
-            user_serializer = CurrentUserSerializer(django_user)
-            profile_serializer = ProfileSerializer(perfil)
-            
-            if user_serializer.is_valid() and profile_serializer.is_valid():
-            # Creación del usuario y el perfil dentro de una transacción
-                with transaction.atomic():
-                    
-                    #Asigna el perfil al usuario
-                    django_user.profile = perfil
-                    django_user.save()
-                    
-                    user_serializer = CurrentUserSerializer(django_user)
-
-            # Devuelve una respuesta exitosa
-                return Response("User: "+user_serializer.data+"Profile: "+profile_serializer.data, status=status.HTTP_201_CREATED)
-            else:
-                return Response("User: "+user_serializer.errors+"Profile: "+profile_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-        except Exception as e:
-            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
-        
+    
     def getTest(self, request):
         print("Solicitud GET recibida")
         return Response({'message': 'Esta es una vista de prueba.'})    

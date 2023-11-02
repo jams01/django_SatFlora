@@ -10,12 +10,12 @@ class ProfileSerializer(serializers.ModelSerializer):
 
 class CurrentUserSerializer(serializers.ModelSerializer):
     """
-        user serialize
+    Serializador de usuario actual
 
-        This class takes an user Object and select the filed to be serialized before sending it to the front end.
-        
-        Attributes:
-            profile: an instance of the Profile serializer.
+    Esta clase toma un objeto de usuario y selecciona los campos que se serializarán antes de enviarlos al front end.
+
+    Atributos:
+        profile: Una instancia del serializador de Perfil (ProfileSerializer).
     """
     profile = ProfileSerializer()
     class Meta:
@@ -24,24 +24,29 @@ class CurrentUserSerializer(serializers.ModelSerializer):
         extra_kwargs = {'password':{'write_only': True}}
     
     def create(self, validated_data):
-        
+        """Crea un nuevo usuario a partir de los datos validados.
+
+        Atributos:
+            user: Crea una instancia de usuario con los parametros recibidos dentro del Serializador para crear el usuario mediante la librería de firebase
+            profile_data: Extae de los parametros recibidos dentro del Serializador el objeto profile, el cual tiene la referencia del profile creado a ese usuario
+            validated_data['username']: Se modifica este parametro del profile para asignarle el UID de firebase
+            dj_user: Retorna el usuario recién creado en django con los datos del profile
+            return dj_user: 
+            Profile.objects.create(user=dj_user, **profile_data): Asigna al usuario retornado el profile que se creó
+            
+        """
         print("Received Data:", validated_data)
-        #Create firebase user
         user = auth.create_user(
             email=validated_data['email'],
             password=validated_data['password']
         )
         
-        # Extract profile data from validated_data
         profile_data = validated_data.pop('profile')
         
-        # Modify the username with Firebase UID
         validated_data['username'] = user.uid
         
-        # Create user in Django with Firebase UID for 'username'
         dj_user = User.objects.create_user(**validated_data)
         
-        # Crea un perfil asociado al usuario de Django
         Profile.objects.create(user=dj_user, **profile_data)
 
         return dj_user 
