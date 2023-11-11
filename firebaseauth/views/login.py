@@ -8,10 +8,10 @@ from django.contrib.auth import authenticate, login
 from django.http import JsonResponse
 from rest_framework import status
 
-from ..models import Profile, User
+from ..models import User
+from ..authserializers import CurrentUserSerializer
 
 import firebase_admin.auth as auth
-from django.db import transaction
 
 class MyView(APIView):
     
@@ -85,21 +85,17 @@ class Login(viewsets.ViewSet):
         serializer_class: This class takes and model object and convert it to a string type to be 
         sent to the front end.
     """
+    authentication_classes = (FirebaseAuthentication, )
+    
     queryset = User.objects.all()
     
-    def post(self, request):
-        try:
-            firebase_token = request.data.get("firebase_token")
-            
-            decoded_token = auth.verify_id_token(firebase_token)
-        
-            uid = decoded_token['uid']
-            username = decoded_token.get('email')
-            
-            return Response({'user_uid': uid,'username':username}, status=status.HTTP_200_OK)
-        except:
-            # Maneja el error de token de Firebase inválido
-            return Response({'message': 'Token de Firebase inválido'}, status=status.HTTP_401_UNAUTHORIZED)
+    def retrieve(self, request):
+        try: 
+            user = CurrentUserSerializer(request.user)
+
+            return Response(user.data, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'message': str(e)}, status=status.HTTP_401_UNAUTHORIZED)
         
     def get_permissions(self):
         """

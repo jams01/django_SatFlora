@@ -5,7 +5,7 @@ from .views.login import Login
 from .views.register import Register
 
 register = Register.as_view({'get':'list','post':'create'})
-login = Login.as_view({'post':'post'})
+login = Login.as_view({'get':'retrieve'})
 app_name = 'auth'
 
 urlpatterns = [
