@@ -34,4 +34,4 @@ class DeleteUser(viewsets.ViewSet):
         
         #delete user from django
         user.delete()   
-        return Response({'detail': 'User deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+        return Response({'detail': 'User deleted successfully'}, status=status.HTTP_200_OK)
