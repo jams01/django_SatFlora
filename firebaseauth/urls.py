@@ -6,7 +6,7 @@ from .views.register import Register
 from .views.delete import DeleteUser
 
 register = Register.as_view({'get':'list','post':'create'})
-login = Login.as_view({'post':'post'})
+login = Login.as_view({'get':'retrieve'})
 delete = DeleteUser.as_view({'delete': 'destroy'})
 app_name = 'auth'
 

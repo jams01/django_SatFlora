@@ -48,7 +48,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'corsheaders',
-    'firebaseauth.apps.FirebaseauthConfig'
+    'firebaseauth.apps.FirebaseauthConfig',
+    'mapas'
 ]
 
 MIDDLEWARE = [
