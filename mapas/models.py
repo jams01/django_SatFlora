@@ -1,6 +1,5 @@
 from django.db import models
 from django.contrib.auth.models import User
-from .models import Project, Image
 
 class City(models.Model):
     idCity = models.AutoField(primary_key=True)
@@ -14,8 +13,8 @@ class City(models.Model):
 class Project(models.Model):
     idProject = models.AutoField(primary_key=True)
     name = models.CharField(max_length=100)
-    city = models.ForeignKey(City, on_delete=models.CASCADE)
-    users = models.ManyToManyField(User, related_name='user_project') # Asigna la relacion muchos a muchos con User
+    city = models.ForeignKey(City, on_delete=models.SET_NULL, null=True)
+    users = models.ManyToManyField(User, related_name='user_project') 
 
     def __str__(self):
         return self.name
@@ -24,8 +23,8 @@ class Product(models.Model):
     idProduct = models.AutoField(primary_key=True)
     name = models.CharField(max_length=100)
     derived = models.BooleanField(default=False)
-    idProject = models.ForeignKey(Project, on_delete=models.CASCADE)  # Agrega la clave foránea a Project
-    idImage = models.ForeignKey(Image, on_delete=models.CASCADE)  # Agrega la clave foránea a Image
+    idProject = models.ForeignKey("Project", on_delete=models.SET_NULL, null=True)  
+    idImage = models.ForeignKey("Image", on_delete=models.SET_NULL, null=True)  
 
     def __str__(self):
         return self.name 
@@ -41,8 +40,8 @@ class ImageType(models.Model):
 class Image(models.Model):
     idImage = models.AutoField(primary_key=True)
     name = models.CharField(max_length=100)
-    image = models.BinaryField()  # Puedes usar BinaryField para almacenar datos binarios como imágenes
-    idImageType = models.ForeignKey(ImageType, on_delete=models.CASCADE)  # Agrega la clave foránea a ImageType
+    image = models.BinaryField()  
+    idImageType = models.ForeignKey(ImageType, on_delete=models.SET_NULL, null=True)  
 
     def __str__(self):
         return self.name        
@@ -51,8 +50,8 @@ class Coordinate(models.Model):
     idCoordinate = models.AutoField(primary_key=True)
     geometry = models.JSONField()
     properties = models.JSONField()
-    type = models.CharField(max_length=100)  # Ajustar longitud segun se requiera
-    idImage = models.ForeignKey(Image, on_delete=models.CASCADE)  # Agrega la clave foránea a Image
+    type = models.CharField(max_length=100)  
+    idImage = models.ForeignKey(Image, on_delete=models.SET_NULL, null=True)  
 
     def __str__(self):
         return f"Coordinate {self.idCoordinate} for Image {self.idImage}"    
