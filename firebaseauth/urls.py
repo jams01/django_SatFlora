@@ -15,5 +15,5 @@ urlpatterns = [
     path('algoprotected/',views.login.ProtectedView.as_view()),
     path('login/',login),
     path('register/',register),
-    path('delete/<int:pk>/', DeleteUser.as_view({'delete': 'destroy'}), name='delete_user'),
+    path('delete/<int:pk>/', delete, name='delete_user'),
 ]
