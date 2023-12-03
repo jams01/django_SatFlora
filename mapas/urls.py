@@ -1,8 +1,8 @@
-from django.urls import path, re_path
-from .views.createmaps import CreateMaps
+from django.urls import path
+from mapas.views import ProjectCreate
 
-createmap = CreateMaps.as_view({'post':'post'})
+create = ProjectCreate.as_view({'post':'create'})
 
 urlpatterns = [
-    path('createmaps/',createmap)
+    path('create-project/', create, name='create-project'),
 ]
