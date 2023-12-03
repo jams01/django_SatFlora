@@ -6,7 +6,7 @@ from .views.register import Register
 from .views.delete import DeleteUser
 
 register = Register.as_view({'get':'list','post':'create'})
-login = Login.as_view({'get':'retrieve'})
+login = Login.as_view({'post':'post'})
 delete = DeleteUser.as_view({'delete': 'destroy'})
 app_name = 'auth'
 
@@ -15,5 +15,5 @@ urlpatterns = [
     path('algoprotected/',views.login.ProtectedView.as_view()),
     path('login/',login),
     path('register/',register),
-    path('delete/<int:pk>/', delete, name='delete_user'),
+    path('delete/<int:pk>/', DeleteUser.as_view({'delete': 'destroy'}), name='delete_user'),
 ]

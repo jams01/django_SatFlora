@@ -1,37 +1,38 @@
 from rest_framework import serializers
-from .models import City, Project, Product, Image, ImageType, Coordinate, Dictionary
+from .models import City, Project, Product, ImageType, Image, Coordinate, Dictionary
+from django.contrib.auth.models import User
 
 class CitySerializer(serializers.ModelSerializer):
     class Meta:
         model = City
-        fields = '__all__'
+        fields = ('idCity', 'name', 'state', 'country')
 
 class ProjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = Project
-        fields = '__all__'
+        fields = ('idProject', 'name', 'city', 'users')
 
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
-        fields = '__all__'
+        fields = ('idProduct', 'name', 'derived', 'idProject', 'idImage')
 
 class ImageTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = ImageType
-        fields = '__all__'
+        fields = ('idImageType', 'name', 'visible')
 
 class ImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Image
-        fields = '__all__'
+        fields = ('idImage', 'name', 'image', 'idImageType')
 
 class CoordinateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Coordinate
-        fields = '__all__'
+        fields = ('idCoordinate', 'geometry', 'properties', 'type', 'idImage')
 
 class DictionarySerializer(serializers.ModelSerializer):
     class Meta:
         model = Dictionary
-        fields = '__all__'
+        fields = ('idDictionary', 'label', 'class_name')
