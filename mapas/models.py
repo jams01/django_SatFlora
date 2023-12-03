@@ -1,6 +1,5 @@
 from django.db import models
 from django.contrib.auth.models import User
-from .models import Project, Image
 
 class City(models.Model):
     idCity = models.AutoField(primary_key=True)
@@ -10,6 +9,23 @@ class City(models.Model):
 
     def __str__(self):
         return self.name
+    
+class ImageType(models.Model):
+    idImageType = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=100)
+    visible = models.BinaryField()
+
+    def __str__(self):
+        return self.name    
+    
+class Image(models.Model):
+    idImage = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=100)
+    image = models.BinaryField()  # Puedes usar BinaryField para almacenar datos binarios como imágenes
+    idImageType = models.ForeignKey(ImageType, on_delete=models.CASCADE)  # Agrega la clave foránea a ImageType
+
+    def __str__(self):
+        return self.name  
 
 class Project(models.Model):
     idProject = models.AutoField(primary_key=True)
@@ -28,24 +44,7 @@ class Product(models.Model):
     idImage = models.ForeignKey(Image, on_delete=models.CASCADE)  # Agrega la clave foránea a Image
 
     def __str__(self):
-        return self.name 
-    
-class ImageType(models.Model):
-    idImageType = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=100)
-    visible = models.BinaryField()
-
-    def __str__(self):
-        return self.name    
-    
-class Image(models.Model):
-    idImage = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=100)
-    image = models.BinaryField()  # Puedes usar BinaryField para almacenar datos binarios como imágenes
-    idImageType = models.ForeignKey(ImageType, on_delete=models.CASCADE)  # Agrega la clave foránea a ImageType
-
-    def __str__(self):
-        return self.name        
+        return self.name          
     
 class Coordinate(models.Model):
     idCoordinate = models.AutoField(primary_key=True)
