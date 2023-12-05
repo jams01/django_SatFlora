@@ -50,8 +50,8 @@ class Coordinate(models.Model):
     idCoordinate = models.AutoField(primary_key=True)
     geometry = models.JSONField()
     properties = models.JSONField()
-    type = models.CharField(max_length=100)  # Ajustar longitud segun se requiera
-    idImage = models.ForeignKey(Image, on_delete=models.CASCADE)  # Agrega la clave foránea a Image
+    type = models.CharField(max_length=100)  
+    idImage = models.ForeignKey(Image, on_delete=models.SET_NULL, null=True)  
 
     def __str__(self):
         return f"Coordinate {self.idCoordinate} for Image {self.idImage}"    
